@@ -82,5 +82,39 @@ public class playerScript : MonoBehaviour
         }
 
     }
+
+    private void OnCollisionEnter2D(Collision2D collision) 
+    {
+        Debug.Log("충돌 이벤트 발생!");
+
+        Debug.Log(collision.gameObject.name);
+
+        if(collision.gameObject.tag == "enemy")
+        {
+            OnDamaged(collision.transform.position);
+        }
+
+
+        
+    }
+    void OnDamaged(Vector2 tergetPos)
+    {
+        gameObject.layer = 10;
+        spriteRenderer.color = new Color(1,1,1,0.4f);
+
+        int dirc = transform.position.x - tergetPos.x > 0 ? 1 : -1;
+        rigid.AddForce(new Vector2(dirc,1)*7, ForceMode2D.Impulse);
+
+        anim.SetTrigger("damaged");
+
+        Invoke("OffDamaged", 3);
+    }
+
+    void OffDamaged()
+    {
+        gameObject.layer = 9;
+        spriteRenderer.color = new Color(1,1,1,1);
+    }
+    
 }
 
