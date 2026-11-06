@@ -5,6 +5,7 @@ using UnityEngine.InputSystem.XR.Haptics;
 public class playerScript : MonoBehaviour
 {   
     public float maxSpeeed;
+    public float jumpPower;
     Rigidbody2D rigid;
     SpriteRenderer spriteRenderer;
     Animator anim;
@@ -16,6 +17,14 @@ public class playerScript : MonoBehaviour
     }
     void Update() 
     {
+        // 점프
+        if(Input.GetButtonDown("Jump") && !anim.GetBool("isJumping"))
+        {
+            rigid.AddForce(Vector2.up*jumpPower, ForceMode2D.Impulse);
+            anim.SetBool("isJumping", true);
+        }
+
+
         //stop speed
         if(Input.GetButtonUp("Horizontal"))
         {
@@ -53,6 +62,25 @@ public class playerScript : MonoBehaviour
         {
             rigid.linearVelocity = new Vector2(maxSpeeed*(-1), rigid.linearVelocity.y);
         }
+
+        //Landing Platform
+        if(rigid.linearVelocity.y < 0) 
+        {
+            Debug.DrawRay(rigid.position, Vector3.down, new Color(0 ,1,0)); 
+
+            RaycastHit2D rayHit = Physics2D.Raycast(rigid.position, Vector3.down, 1, LayerMask.GetMask("platform"));
+
+            if(rayHit.collider != null)
+            {
+                if(rayHit.distance < 0.5f)
+                {
+                    //Debug.Log(rayHit.collider.name);
+                    anim.SetBool("isJumping", false);
+                }
+                
+            }
+        }
+
     }
 }
 
